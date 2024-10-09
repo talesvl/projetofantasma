@@ -1,34 +1,296 @@
 ---
-title: "Modelo Projeto - Quarto"
+title: "Projeto Fantasma - House of Excellence"
 
 # Nome do documento PDF gerado
-output-file: titulo do projeto
+output-file: fantasmaaa
+project:
+  title: "Projeto Fantasma-House of Excellence" # É interessante mudar o nome do projeto para gestão de conhecimento
+  output-dir: resultados/
+
+
+lang: pt
+
+format: 
+  pdf:
+    geometry: 
+      - left=3cm 
+      - right=2cm 
+      - top=3cm 
+      - bottom=2cm 
+    documentclass: estat/estat
+    toc: true
+    toc-title: "Sumário"
+    mainfont: Arial 
+    
+    linkcolor: black 
+    filecolor: black
+    citecolor: black
+    urlcolor: black 
+    number-sections: true
+    
+    fig-width: 6.2
+    fig-height: 3.66
+
+
+crossref: 
+  fig-title: Figura
+  fig-prefix: ""
+  tbl-title: Tabela
+  tbl-prefix: ""
+  title-delim: ":"
+
+execute: 
+  message: false
+  warning: false
+  echo: false
+  error: false
+  quiet: true
+  
+
+  
+    
+
+include-in-header:
+  - file: arquivos_tex/nome_dos_alocados_e_do_cliente.tex # Arrumando para adicionar os autores e o cliente
+  - file: arquivos_tex/outros_detalhes.tex
+
+include-before-body: 
+  - file: arquivos_tex/logo.tex
+  
+
+
+
+editor: visual
 ---
+
 ```{r}
 #| include: false
 source("rdocs/source/packages.R")
 ```
 
 ```{r}
-# Rodar apenas uma vez na vida!
-## Instalando o tinytex(pacote apenas)
-### CRAN version
-install.packages('tinytex')
-
-### or the development version on GitHub
-remotes::install_github('rstudio/tinytex')
-
-## Baixando o tinytex
+library(ggplot2)
+library(readxl)
+library(latexpdf)
+library(tidyverse)
+library(dplyr)
 library(tinytex)
-tinytex::install_tinytex()
+dados<-read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx")
+
+dados_mulheres<-filter(dados,Gender=="F")
+mulheres_medalha<-filter(dados_mulheres, Medal %in% c("Bronze","Silver","Gold"))
+
+
+frequencia_feminina <- mulheres_medalha %>%
+  filter(!is.na(Team)) %>%
+  count(Team) %>%
+  mutate(
+    freq = n,
+    label = str_c(n) %>% str_squish()
+  )
+
+dados_mulheres_medalha<-dados_mulheres %>% filter(!is.na(Medal))
+
+dados_mulheres_medalha <- dados_mulheres_medalha %>%
+  filter(!is.na(Team)) %>%
+  count(Team) %>%
+  mutate(
+    freq = n,
+    relative_freq = round((freq / sum(freq)) * 100, 1),
+    freq = gsub("\\.", ",", relative_freq) %>% paste("%", sep = ""),
+    label = str_c(n, " (", freq, ")") %>% str_squish()
+)
+
+dados_mulheres_medalha5<-arrange(dados_mulheres_medalha,n)
+dados_mulheres_medalha5<-tail(dados_mulheres_medalha5,5)
+dados_mulheres_medalha5tabela<-arrange(dados_mulheres_medalha5,desc(n))
+dados_mulheres_medalha5tabela<-dados_mulheres_medalha5tabela[,c(1,5)]
+
+top5_feminino_medalhas<-arrange(frequencia_feminina,desc(n))
+top5_feminino_medalhas<-head(top5_feminino_medalhas,5)
+top5_feminino_medalhas$Team<-c("Estados Unidos","Rússia","Alemanha","China","Austrália")
+
+top5_feminino_medalhas_tabela<-select(top5_feminino_medalhas,Team,n)
+colnames(top5_feminino_medalhas_tabela)<-c("País","Frequência")
+
+dados$`Weight (lbs)`<-dados$`Weight (lbs)`*0.45359237
+dados$`Height (cm)`<-dados$`Height (cm)`/100
+dados<-mutate(dados, IMC=dados$`Weight (lbs)`/(dados$`Height (cm)`**2))
+dados_ginástica_futebol_judô_atletismo_badminton<-filter(dados, Sport %in% c("Gymnastics","Football","Judo","Athletics","Badminton"))
+dados_ginástica_futebol_judô_atletismo_badminton <- dados_ginástica_futebol_judô_atletismo_badminton %>%
+  filter(!is.na(`Height (cm)`))
+dados_ginástica_futebol_judô_atletismo_badminton <- dados_ginástica_futebol_judô_atletismo_badminton %>%
+  filter(!is.na(`Weight (lbs)`))
+medalhistas_geral<-dados
+
+dados_mulheres_medalha5$Team<-factor(dados_mulheres_medalha5$Team)
+levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("United States")]<-"Estados Unidos"
+levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("Russia")]<-"Rússia"
+levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("Germany")]<-"Alemanha"
+levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("Australia")]<-"Austrália"
+
+dados_ginástica_futebol_judô_atletismo_badminton$Sport<-factor(dados_ginástica_futebol_judô_atletismo_badminton$Sport)
+levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Athletics")]<-"Atletismo"
+levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Gymnastics")]<-"Ginástica"
+levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Football")]<-"Futebol"
+levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Judo")]<-"Judô"
+
+dados_ginástica_futebol_judô_atletismo_badminton <- dados_ginástica_futebol_judô_atletismo_badminton %>%
+  filter(!is.na(Medal))
+
+
+
+
+
+
+medalhistas_geral<-dados
+medalhistas_geral<-medalhistas_geral %>%
+  filter(!is.na(Medal))
+
+medalhistas_geral2 <- medalhistas_geral %>%
+  count(Names) %>%
+  mutate(
+    freq = n,
+    label = str_c(n) %>% str_squish()
+  )
+
+medalhistas_geral2<-arrange(medalhistas_geral2,desc(n))
+medalhistas_geral2<-head(medalhistas_geral2,3)
+
+medalhistas_geral2<-left_join(medalhistas_geral,medalhistas_geral2, by="Names")
+medalhistas_geral2<-arrange(medalhistas_geral2, desc(n))
+top3<-medalhistas_geral2
+top3<-top3 %>% filter(!is.na(n))
+
+top32<-top3 %>%
+  count(Medal,Names) %>%
+  mutate(
+    freq=n,
+    label=str_c(n) %>% str_squish()
+  )
+top32<-mutate(top32,freq_relativa=c("25.0","25.0","20.0","50.0","75.0","40.0","25.0","40.0"))
+top321<-data.frame("Silver","Michael Fred Phelps, II",0,0,0,"0.0")
+colnames(top321)[1]<-"Medal"
+colnames(top321)[2]<-"Names"
+colnames(top321)[3]<-"n"
+colnames(top321)[4]<-"freq"
+colnames(top321)[5]<-"label"
+colnames(top321)[6]<-"freq_relativa"
+top32<-rbind(top32,top321)
+colnames(top32)[1]<-"Medalha"
+top32$Medalha<-factor(top32$Medalha)
+levels(top32$Medalha)[levels(top32$Medalha) %in% c("Gold")]<-"Ouro"
+levels(top32$Medalha)[levels(top32$Medalha) %in% c("Silver")]<-"Prata"
+
 ```
-
-
 
 # Introdução
 
-# Referencial Teórico
+## Sobre o relatório
+
+Este relatório tem como objetivo realizar análises estatísticas que visam otimizar o desempenho dos atletas de elite da House of Excellence, que participaram das olimpíadas dos anos de 2000 até 2016. Neste, contém quatro análises sobre diversos aspectos que vão auxiliar no melhor entendimento sobre eles: 1.Top 5 países com maior número de mulheres medalhistas. 2.Valor IMC por esporte, estes sendo, ginástica, futebol, judô, atletismo e badminton. 3.Top 3 medalhistas gerais por quantidade de cada tipo de medalha. 4.Variação Peso por Altura.
+
+## Sobre o banco de dados
+
+A coleta dos dados foi feita pela House of Excellence, contendo dados sobre:\
+
+● Name: O nome do atleta.
+
+● Gender: O gênero do atleta.
+
+● Age: A idade do atleta.
+
+● Height: A altura do atleta, em centímetros.
+
+● Weight: O peso do atleta, em libras.
+
+● Team: O país pelo qual o atleta está competindo.
+
+● Sport: O esporte que o atleta compete.
+
+● Event: A modalidade, “evento”, que o atleta conquistou a medalha.
+
+● Medal: O tipo de medalha ganha, sendo ouro, prata ou bronze.
+
+## Software utilizado para análise
+
+RStudio versão: "R-4.4.3"
+
+# Metodologia
 
 # Análises
 
-# Conclusões
+## Análise 1
+
+Nesta análise foi feito o estudo da frequência relativa da variável quantitativa discreta, número de medalhistas, por país no banco de dados sobre atletas que participaram dos Jogos Olímpicos no ano de 2000-2016 na categoria feminina. Foram coletados dados de 53 países medalhistas e as 5 nações que tiveram mais representantes femininas medalhistas foram postas em um gráfico de barras univariado para uma melhor visualização.
+
+```{r}
+#| label: colunas-uni-freq
+#| fig-cap: "Gráfico de colunas do número de medalhas por país"
+
+ggplot(dados_mulheres_medalha5) +
+  aes(x = fct_reorder(Team, n, .desc=T), y = n, label = label) +
+  geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, #hjust = .5,
+    size = 3
+  ) +
+  labs(x = "País", y = "Frequência") +
+  theme_estat()
+ggsave("colunas-uni-freq.pdf", width = 158, height = 93, units = "mm"
+)
+```
+
+Avaliando cada nação, percebe-se por meio da *Figura 1* que o número de medalhistas é desigual. O gráfico indica que os 5 países que mais tiveram medalhistas na categoria feminina nos Jogos Olímpicos entre as edições de 2000 até 2016 foram, em primeiro lugar de maneira isolada, os Estados Unidos (146), seguido pela Rússia (91), na terceira posição se encontra a Alemanha (74), em quarto colocado a China (64) e bem próximo dela com apenas 2 medalhistas de diferença, a Austrália (62) em quinto colocado fechando o ranking. Observa-se uma notória liderança dos Estados Unidos com 6.2 pontos percentuais maior que o segundo colocado na análise, Rússia. Dessa forma, indicando que existe, nos Jogos Olímpicos, a soberania de atletas estadunidenses.
+
+## Análise 2
+
+Nesta análise foi comparada a variável quantitativa contínua "IMC", Índice de Massa Corporal, em cada modalidade olímpica, sendo essas: atletismo, ginástica, badminton, futebol e judô. O cálculo desse índice se dá pela formula (peso corporal/altura\^2) e serve como um parâmetro simples para o controle do peso corporal ideal pra sua altura ou tarefa que deseja realizar. Para essa análise, foi feito um gráfico em *Boxplot* bivariado em que está em ordem crescente a mediana do IMC em cada esporte.
+
+```{r}
+#| fig-cap: "Gráfico em Boxplot do IMC do atleta por esporte"
+
+ggplot(dados_ginástica_futebol_judô_atletismo_badminton) +
+  aes(x = reorder(Sport, IMC, FUN= median), y = IMC) +
+  geom_boxplot(fill = c("#A11D21"), width = 0.5) +
+  stat_summary(
+    fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
+  ) +
+  labs(x = "Esporte", y = "IMC") +
+  theme_estat()
+ggsave("box_bi4.pdf", width = 158, height = 93, units = "mm")
+```
+
+Avaliando o IMC dos esportes pela *Figura 2*, é perceptível que cada esporte possui um IMC ideal para uma melhor performance, sendo necessário um Índice de Massa Corporal menor para atletas da ginástica em comparação ao atletismo, que por sua vez é inferior ao dos atletas de badminton, com um índice maior vem em seguida os atletas de futebol e entre todos os esportes analisados, os mais pesados são, com uma grande diferença, os atletas de judô.
+
+Pelo gráfico é perceptível que existe bastante variação e a presença de valores estremos no IMC de atletas do judô e de atletismo, isso se deve por conta da divisão das modalidades, sendo no atletismo, desde maratonas, na qual requer atletas mais leves e condicionados, até arremesso de peso, no qual requer atletas mais pesados e forte, já no judô, existe a divisão de peso na competição indo de extra peso leve à peso pesado. Na *Figura 2* é perceptível analisar sobre a ginástica que, em um esporte onde predomina a agilidade, equilíbrio, flexibilidade e coordenação, assim, peso corporal baixo é sinônimo de bom rendimento nesse esporte.
+
+## Análise 3
+
+```{r}
+#| fig-cap: "Gráfico em barras de tipo de medalha por atleta"
+
+porcentagens <- str_c(top32$freq_relativa, "%") %>% str_replace("\\.", ",")
+legendas <- str_squish(str_c(top32$freq, " (", porcentagens, ")"))
+ggplot(top32) +
+  aes(
+    x = fct_reorder(Names, freq, .desc = T), y = freq,
+    fill = Medalha, label = legendas
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding =0)) +
+  geom_text(
+    position = position_dodge(width = .9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Atleta", y = "Frequência") +
+  ylim(0,7)+
+  theme_estat()
+ggsave("colunas-bi-freq3.pdf", width = 158, height = 93, units = "mm")
+
+```
+
+\
+
+#  Conclusões

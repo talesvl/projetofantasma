@@ -3,7 +3,7 @@ project:
   output-dir: resultados/
 
 
-lang: pt-BR
+lang: pt
 
 format: 
   pdf:
