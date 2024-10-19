@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 dados_mulheres<-filter(dados,Gender=="F")
 mulheres_medalha<-filter(dados_mulheres, Medal %in% c("Bronze","Silver","Gold"))
 
@@ -168,3 +169,6 @@ dados<-read_excel("Olimpiadas 2000 - 2016.xlsx")
 install.packages("rvcheck")
 library("rvcheck")
 check_r()
+=======
+pppppp
+>>>>>>> b0d96612b2a964ba22e0532a473377a567d87bfa
