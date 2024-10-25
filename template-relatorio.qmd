@@ -2,7 +2,7 @@
 title: "Projeto Fantasma - House of Excellence"
 
 # Nome do documento PDF gerado
-output-file: fantasmaaa
+output-file: projeto_fantasma_tales
 project:
   title: "Projeto Fantasma-House of Excellence" # É interessante mudar o nome do projeto para gestão de conhecimento
   output-dir: resultados/
@@ -45,7 +45,7 @@ execute:
   echo: false
   error: false
   quiet: true
-  
+
 
   
     
@@ -76,22 +76,36 @@ library(tidyverse)
 library(dplyr)
 library(tinytex)
 dados<-read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx")
+Olimpiadas_ATHENAS <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+    sheet = "Athina")
+Olimpiadas_BEIJING <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+    sheet = "Beijing")
+Olimpiadas_LONDRES <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+    sheet = "London")
+Olimpiadas_RIO <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+    sheet = "Rio de Janeiro")
+Olimpiadas_SIDNEY <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+    sheet = "Sydney")
+
+
+colnames(Olimpiadas_ATHENAS)<-c("Names","Gender","Age","Height (cm)","Weight (lbs)","Team","Sport","Event","Medal")
+colnames(Olimpiadas_BEIJING)<-c("Names","Gender","Age","Height (cm)","Weight (lbs)","Team","Sport","Event","Medal")
+colnames(Olimpiadas_LONDRES)<-c("Names","Gender","Age","Height (cm)","Weight (lbs)","Team","Sport","Event","Medal")
+colnames(Olimpiadas_RIO)<-c("Names","Gender","Age","Height (cm)","Weight (lbs)","Team","Sport","Event","Medal")
+colnames(Olimpiadas_SIDNEY)<-c("Names","Gender","Age","Height (cm)","Weight (lbs)","Team","Sport","Event","Medal")
+
+
+dados<-rbind(Olimpiadas_ATHENAS,Olimpiadas_BEIJING,Olimpiadas_LONDRES,Olimpiadas_RIO,Olimpiadas_SIDNEY)
+dados<-dados %>% filter(!is.na(dados$Medal))
+dados$`Weight (lbs)`<-dados$`Weight (lbs)`*0.45359237
+dados$`Height (cm)`<-dados$`Height (cm)`/100
+dados<-mutate(dados, IMC=dados$`Weight (lbs)`/(dados$`Height (cm)`**2))
+
 
 dados_mulheres<-filter(dados,Gender=="F")
-mulheres_medalha<-filter(dados_mulheres, Medal %in% c("Bronze","Silver","Gold"))
 
 
-frequencia_feminina <- mulheres_medalha %>%
-  filter(!is.na(Team)) %>%
-  count(Team) %>%
-  mutate(
-    freq = n,
-    label = str_c(n) %>% str_squish()
-  )
-
-dados_mulheres_medalha<-dados_mulheres %>% filter(!is.na(Medal))
-
-dados_mulheres_medalha <- dados_mulheres_medalha %>%
+frequencia_mulheres <- dados_mulheres %>%
   filter(!is.na(Team)) %>%
   count(Team) %>%
   mutate(
@@ -101,94 +115,63 @@ dados_mulheres_medalha <- dados_mulheres_medalha %>%
     label = str_c(n, " (", freq, ")") %>% str_squish()
 )
 
-dados_mulheres_medalha5<-arrange(dados_mulheres_medalha,n)
-dados_mulheres_medalha5<-tail(dados_mulheres_medalha5,5)
-dados_mulheres_medalha5tabela<-arrange(dados_mulheres_medalha5,desc(n))
-dados_mulheres_medalha5tabela<-dados_mulheres_medalha5tabela[,c(1,5)]
+mulheres5<-arrange(frequencia_mulheres,n)
+mulheres5<-tail(mulheres5,5)
+mulheres5<-arrange(mulheres5,desc(n))
+mulheres5$Team<-c("Estados Unidos","Rússia","China","Austrália","Alemanha")
 
-top5_feminino_medalhas<-arrange(frequencia_feminina,desc(n))
-top5_feminino_medalhas<-head(top5_feminino_medalhas,5)
-top5_feminino_medalhas$Team<-c("Estados Unidos","Rússia","Alemanha","China","Austrália")
 
-top5_feminino_medalhas_tabela<-select(top5_feminino_medalhas,Team,n)
-colnames(top5_feminino_medalhas_tabela)<-c("País","Frequência")
+######################################
 
-dados$`Weight (lbs)`<-dados$`Weight (lbs)`*0.45359237
-dados$`Height (cm)`<-dados$`Height (cm)`/100
-dados<-mutate(dados, IMC=dados$`Weight (lbs)`/(dados$`Height (cm)`**2))
-dados_ginástica_futebol_judô_atletismo_badminton<-filter(dados, Sport %in% c("Gymnastics","Football","Judo","Athletics","Badminton"))
-dados_ginástica_futebol_judô_atletismo_badminton <- dados_ginástica_futebol_judô_atletismo_badminton %>%
+dados_esporte<-filter(dados, Sport %in% c("Gymnastics","Football","Judo","Athletics","Badminton"))
+dados_esporte <- dados_esporte %>%
   filter(!is.na(`Height (cm)`))
-dados_ginástica_futebol_judô_atletismo_badminton <- dados_ginástica_futebol_judô_atletismo_badminton %>%
+dados_esporte <- dados_esporte %>%
   filter(!is.na(`Weight (lbs)`))
-medalhistas_geral<-dados
-
-dados_mulheres_medalha5$Team<-factor(dados_mulheres_medalha5$Team)
-levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("United States")]<-"Estados Unidos"
-levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("Russia")]<-"Rússia"
-levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("Germany")]<-"Alemanha"
-levels(dados_mulheres_medalha5$Team)[levels(dados_mulheres_medalha5$Team) %in% c("Australia")]<-"Austrália"
-
-dados_ginástica_futebol_judô_atletismo_badminton$Sport<-factor(dados_ginástica_futebol_judô_atletismo_badminton$Sport)
-levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Athletics")]<-"Atletismo"
-levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Gymnastics")]<-"Ginástica"
-levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Football")]<-"Futebol"
-levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport)[levels(dados_ginástica_futebol_judô_atletismo_badminton$Sport) %in% c("Judo")]<-"Judô"
-
-dados_ginástica_futebol_judô_atletismo_badminton <- dados_ginástica_futebol_judô_atletismo_badminton %>%
-  filter(!is.na(Medal))
 
 
+dados_esporte$Sport<-factor(dados_esporte$Sport)
+levels(dados_esporte$Sport)[levels(dados_esporte$Sport) %in% c("Athletics")]<-"Atletismo"
+levels(dados_esporte$Sport)[levels(dados_esporte$Sport) %in% c("Gymnastics")]<-"Ginástica"
+levels(dados_esporte$Sport)[levels(dados_esporte$Sport) %in% c("Football")]<-"Futebol"
+levels(dados_esporte$Sport)[levels(dados_esporte$Sport) %in% c("Judo")]<-"Judô"
 
 
+######################################
 
-
-medalhistas_geral<-dados
-medalhistas_geral<-medalhistas_geral %>%
-  filter(!is.na(Medal))
-
-medalhistas_geral2 <- medalhistas_geral %>%
-  count(Names) %>%
+dados_individual <- dados%>%
+  count(Names,Medal) %>%
   mutate(
     freq = n,
     label = str_c(n) %>% str_squish()
   )
-
-medalhistas_geral2<-arrange(medalhistas_geral2,desc(n))
-medalhistas_geral2<-head(medalhistas_geral2,3)
-
-medalhistas_geral2<-left_join(medalhistas_geral,medalhistas_geral2, by="Names")
-medalhistas_geral2<-arrange(medalhistas_geral2, desc(n))
-top3<-medalhistas_geral2
-top3<-top3 %>% filter(!is.na(n))
-
-top32<-top3 %>%
-  count(Medal,Names) %>%
+dados_individual2 <- dados%>%
+  count(Names) %>%
   mutate(
-    freq=n,
-    label=str_c(n) %>% str_squish()
-  )
-top32<-mutate(top32,freq_relativa=c("25.0","25.0","20.0","50.0","75.0","40.0","25.0","40.0"))
-top321<-data.frame("Silver","Michael Fred Phelps, II",0,0,0,"0.0")
-colnames(top321)[1]<-"Medal"
-colnames(top321)[2]<-"Names"
-colnames(top321)[3]<-"n"
-colnames(top321)[4]<-"freq"
-colnames(top321)[5]<-"label"
-colnames(top321)[6]<-"freq_relativa"
-top32<-rbind(top32,top321)
-colnames(top32)[1]<-"Medalha"
-top32$Medalha<-factor(top32$Medalha)
-levels(top32$Medalha)[levels(top32$Medalha) %in% c("Gold")]<-"Ouro"
-levels(top32$Medalha)[levels(top32$Medalha) %in% c("Silver")]<-"Prata"
+    freq = n)
 
+dados_individual<-left_join(dados_individual,dados_individual2,by="Names")
+rm(dados_individual2)
+top3<-dados_individual
+
+top3<-arrange(top3,desc(n.y))
+top3<-head(top3,9)
+top3[4]<-c("7,1%","82,1%","10,8%","41,7%","25%","33,3%","25%","50%","25%")
+
+
+#######################################
+
+dados2<-dados
+dados2<-dados2 %>% filter(!is.na(dados2$`Height (cm)`))
+dados2<-dados2 %>% filter(!is.na(dados2$`Weight (lbs)`))
+spearman<-cor(dados2$`Height (cm)`,dados2$`Weight (lbs)`, method = "spearman",)
 ```
 
 # Introdução
 
 ## Sobre o relatório
 
-Este relatório tem como objetivo realizar análises estatísticas que visam otimizar o desempenho dos atletas de elite da House of Excellence, que participaram das olimpíadas dos anos de 2000 até 2016. Neste, contém quatro análises sobre diversos aspectos que vão auxiliar no melhor entendimento sobre eles: 1.Top 5 países com maior número de mulheres medalhistas. 2.Valor IMC por esporte, estes sendo, ginástica, futebol, judô, atletismo e badminton. 3.Top 3 medalhistas gerais por quantidade de cada tipo de medalha. 4.Variação Peso por Altura.
+Este relatório tem como objetivo realizar análises estatísticas que visam otimizar o desempenho dos atletas de elite da House of Excellence, que participaram das olimpíadas dos anos de 2000 até 2016. Neste, contém quatro análises sobre diversos aspectos que vão auxiliar no melhor entendimento sobre eles: 1.Top 5 países com maior número de mulheres medalhistas. 2.Valor IMC por esporte, estes sendo, ginástica, futebol, judô, atletismo e badminton. 3.Top 3 medalhistas gerais por quantidade de cada tipo de medalha. 4.Variação Peso por Altura. Foi realizado para as análises a filtragem de apenas atletas premiados pelo seu desempenho com uma medalha.
 
 ## Sobre o banco de dados
 
@@ -216,19 +199,15 @@ A coleta dos dados foi feita pela House of Excellence, contendo dados sobre:\
 
 RStudio versão: "R-4.4.3"
 
-# Metodologia
+# Análise 1
 
-# Análises
-
-## Análise 1
-
-Nesta análise foi feito o estudo da frequência relativa da variável quantitativa discreta, número de medalhistas, por país no banco de dados sobre atletas que participaram dos Jogos Olímpicos no ano de 2000-2016 na categoria feminina. Foram coletados dados de 53 países medalhistas e as 5 nações que tiveram mais representantes femininas medalhistas foram postas em um gráfico de barras univariado para uma melhor visualização.
+Nesta análise, foi feito o estudo da frequência relativa da variável quantitativa discreta, número de medalhistas, por país no banco de dados sobre atletas que participaram dos Jogos Olímpicos no ano de 2000-2016 na categoria feminina. Foram coletados dados de 94 países medalhistas e as 5 nações que tiveram mais representantes femininas medalhistas foram postas em um gráfico de barras univariado para uma melhor visualização.
 
 ```{r}
 #| label: colunas-uni-freq
 #| fig-cap: "Gráfico de colunas do número de medalhas por país"
 
-ggplot(dados_mulheres_medalha5) +
+ggplot(mulheres5) +
   aes(x = fct_reorder(Team, n, .desc=T), y = n, label = label) +
   geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
   geom_text(
@@ -242,16 +221,22 @@ ggsave("colunas-uni-freq.pdf", width = 158, height = 93, units = "mm"
 )
 ```
 
-Avaliando cada nação, percebe-se por meio da *Figura 1* que o número de medalhistas é desigual. O gráfico indica que os 5 países que mais tiveram medalhistas na categoria feminina nos Jogos Olímpicos entre as edições de 2000 até 2016 foram, em primeiro lugar de maneira isolada, os Estados Unidos (146), seguido pela Rússia (91), na terceira posição se encontra a Alemanha (74), em quarto colocado a China (64) e bem próximo dela com apenas 2 medalhistas de diferença, a Austrália (62) em quinto colocado fechando o ranking. Observa-se uma notória liderança dos Estados Unidos com 6.2 pontos percentuais maior que o segundo colocado na análise, Rússia. Dessa forma, indicando que existe, nos Jogos Olímpicos, a soberania de atletas estadunidenses.
+Analisando cada nação, percebe-se por meio da *Figura 1* que o número de medalhistas é desigual. O gráfico indica que os 5 países que mais tiveram medalhistas na categoria feminina nos Jogos Olímpicos entre as edições de 2000 até 2016 foram, em primeiro lugar de maneira isolada, os Estados Unidos (741), seguido pela Rússia (416), na terceira posição se encontra a China (384), em quarto colocado a Austrália (340) e mais afastada dos demais, a Alemanha (268) em quinto colocado fechando o ranking. Observa-se uma notória liderança dos Estados Unidos com 7.1 pontos percentuais maior que o segundo colocado na análise, Rússia. Dessa forma, indicando que existe, nos Jogos Olímpicos, a soberania de atletas estadunidenses.
 
-## Análise 2
+# Análise 2
 
-Nesta análise foi comparada a variável quantitativa contínua "IMC", Índice de Massa Corporal, em cada modalidade olímpica, sendo essas: atletismo, ginástica, badminton, futebol e judô. O cálculo desse índice se dá pela formula (peso corporal/altura\^2) e serve como um parâmetro simples para o controle do peso corporal ideal pra sua altura ou tarefa que deseja realizar. Para essa análise, foi feito um gráfico em *Boxplot* bivariado em que está em ordem crescente a mediana do IMC em cada esporte.
+Nesta análise, foi comparada a variável quantitativa contínua "IMC", Índice de Massa Corporal, em cada modalidade olímpica, sendo essas: atletismo, ginástica, badminton, futebol e judô. O cálculo desse índice se dá pela formula:
+
+$$
+IMC=(peso/altura^2)
+$$
+
+Essa medida serve como um parâmetro simples para o controle do peso corporal ideal pra sua altura ou tarefa que deseja realizar. Para essa análise, foi feito um gráfico em *Boxplot* bivariado em que está em ordem crescente a mediana do IMC em cada esporte.
 
 ```{r}
 #| fig-cap: "Gráfico em Boxplot do IMC do atleta por esporte"
 
-ggplot(dados_ginástica_futebol_judô_atletismo_badminton) +
+ggplot(dados_esporte) +
   aes(x = reorder(Sport, IMC, FUN= median), y = IMC) +
   geom_boxplot(fill = c("#A11D21"), width = 0.5) +
   stat_summary(
@@ -266,31 +251,55 @@ Avaliando o IMC dos esportes pela *Figura 2*, é perceptível que cada esporte p
 
 Pelo gráfico é perceptível que existe bastante variação e a presença de valores estremos no IMC de atletas do judô e de atletismo, isso se deve por conta da divisão das modalidades, sendo no atletismo, desde maratonas, na qual requer atletas mais leves e condicionados, até arremesso de peso, no qual requer atletas mais pesados e forte, já no judô, existe a divisão de peso na competição indo de extra peso leve à peso pesado. Na *Figura 2* é perceptível analisar sobre a ginástica que, em um esporte onde predomina a agilidade, equilíbrio, flexibilidade e coordenação, assim, peso corporal baixo é sinônimo de bom rendimento nesse esporte.
 
-## Análise 3
+# Análise 3
+
+Nesta análise, o foco do estudo foi a variável qualitativa ordinal medalha, sendo elas a de ouro, prata e bronze conquistada pelos 3 atletas que mais acumularam essas premiações nas edições dos Jogos Olímpicos analisados. Após isso, foi feita a divisão no número total de medalhas de acordo com o seu tipo e posta em um gráfico em barras bivariado para uma melhor percepção.
 
 ```{r}
-#| fig-cap: "Gráfico em barras de tipo de medalha por atleta"
+#| fig-cap: "Gráfico em barras da frequência e do tipo de medalha por atleta"
 
-porcentagens <- str_c(top32$freq_relativa, "%") %>% str_replace("\\.", ",")
-legendas <- str_squish(str_c(top32$freq, " (", porcentagens, ")"))
-ggplot(top32) +
+porcentagens <- str_c(top3$freq.x) %>% str_replace("\\.", ",")
+legendas <- str_squish(str_c(top3$n.x, " (", porcentagens, ")"))
+ggplot(top3) +
   aes(
-    x = fct_reorder(Names, freq, .desc = T), y = freq,
-    fill = Medalha, label = legendas
+    x = Names, y = n.x,
+    fill = Medal, label = legendas
   ) +
   geom_col(position = position_dodge2(preserve = "single", padding =0)) +
   geom_text(
     position = position_dodge(width = .9),
     vjust = -0.5, hjust = 0.5,
-    size = 3
+    size = 2.9
   ) +
   labs(x = "Atleta", y = "Frequência") +
-  ylim(0,7)+
   theme_estat()
 ggsave("colunas-bi-freq3.pdf", width = 158, height = 93, units = "mm")
 
 ```
 
-\
+Para essa análise podemos observar os 3 atletas que mais conquistaram medalhas nas Olimpíadas 2000-2016, pela *Figura 3* é possível observar que o atleta Michael Phelps foi o atleta mais vezes campeão (23) e com mais medalhas (28), já a atleta Natalie Coughlin foi a segunda colocada com mais medalhas da contagem absoluta (12) bem dividido entre ouro, bronze e prata, em terceiro colocado o Ryan Lochte com 12 medalhas também, sendo em sua maioria ouro (6). Para essa análise foi feito a filtragem dos 3 atletas com mais medalhas. Contudo, por conta do empate técnico para a segunda colocação, como critério de desempate, a ordem alfabética foi preferível.
 
-#  Conclusões
+# Análise 4
+
+Nesta análise, o intuito foi entender a relação entre a variável quantitativa contínua peso (peso corporal do atleta em quilogramas) e a variável quantitativa contínua altura (altura do atleta em metros). Foi feito um gráfico de dispersão multivariado entre essas características para um melhor estudo delas.
+
+```{r}
+#| fig-cap: "Gráfico de dispersão do peso e da altura do atleta"
+
+ggplot(dados2) +
+  aes(x = dados2$`Height (cm)`, y = dados2$`Weight (lbs)`) +
+  geom_point(colour = "#A11D21", size = 1.8) +
+  labs(
+    x = "Altura",
+    y = "Peso"
+  ) +
+  geom_smooth(se=F,color="black")+
+  theme_estat()
+ggsave("disp_uni2.pdf", width = 158, height = 93, units = "mm")
+```
+
+$$
+ρ=0.84081
+$$
+
+Analisando o gráfico da *Figura 4* juntamente ao Coeficiente de Correlação de Spearman (\>0.84), é possível determinar que a relação entre o peso e a altura do atleta é muito forte e positiva, ou seja, a medida em que o peso do atleta aumenta, a altura tende à aumentar proporcionalmente e vice-versa, o mesmo efeito ocorre caso alguma dessas medidas diminua.
