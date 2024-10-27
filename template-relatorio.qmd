@@ -156,7 +156,7 @@ top3<-dados_individual
 
 top3<-arrange(top3,desc(n.y))
 top3<-head(top3,9)
-top3[4]<-c("7,1%","82,1%","10,8%","41,7%","25%","33,3%","25%","50%","25%")
+top3[4]<-c("7,1%","82,1%","10,7%","41,7%","25%","33,3%","25%","50%","25%")
 
 
 #######################################
@@ -165,6 +165,16 @@ dados2<-dados
 dados2<-dados2 %>% filter(!is.na(dados2$`Height (cm)`))
 dados2<-dados2 %>% filter(!is.na(dados2$`Weight (lbs)`))
 spearman<-cor(dados2$`Height (cm)`,dados2$`Weight (lbs)`, method = "spearman",)
+top32<-c("Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Ryan Steven Lochte","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Michael Fred Phelps, II","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)","Natalie Anne Coughlin (-Hall)")
+top321<-c("Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Prata","Prata","Prata","Bronze","Bronze","Bronze","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Ouro","Prata","Prata","Prata","Bronze","Bronze","Ouro","Ouro","Ouro","Prata","Prata","Prata","Prata","Bronze","Bronze","Bronze","Bronze","Bronze")
+top32<-as.data.frame(top32)
+top321<-as.data.frame(top321)
+top32<-mutate(top32,top321)
+teste<-chisq.test(top32$top32,top32$top321)
+x2<-12.776
+c<-(12.776/(12.776+52))^0.5
+Cmax<-(2/3)^0.5 # tabela 3x3
+cmod<-c/Cmax
 ```
 
 # Introdução
@@ -249,7 +259,7 @@ ggsave("box_bi4.pdf", width = 158, height = 93, units = "mm")
 
 Avaliando o IMC dos esportes pela *Figura 2*, é perceptível que cada esporte possui um IMC ideal para uma melhor performance, sendo necessário um Índice de Massa Corporal menor para atletas da ginástica em comparação ao atletismo, que por sua vez é inferior ao dos atletas de badminton, com um índice maior vem em seguida os atletas de futebol e entre todos os esportes analisados, os mais pesados são, com uma grande diferença, os atletas de judô.
 
-Pelo gráfico é perceptível que existe bastante variação e a presença de valores estremos no IMC de atletas do judô e de atletismo, isso se deve por conta da divisão das modalidades, sendo no atletismo, desde maratonas, na qual requer atletas mais leves e condicionados, até arremesso de peso, no qual requer atletas mais pesados e forte, já no judô, existe a divisão de peso na competição indo de extra peso leve à peso pesado. Na *Figura 2* é perceptível analisar sobre a ginástica que, em um esporte onde predomina a agilidade, equilíbrio, flexibilidade e coordenação, assim, peso corporal baixo é sinônimo de bom rendimento nesse esporte.
+Pelo gráfico é perceptível que existe bastante variação e a presença de valores estremos no IMC de atletas do judô e de atletismo, isso se deve por conta da divisão das modalidades, sendo no atletismo, desde maratonas, na qual requer atletas mais leves e condicionados, até arremesso de peso, no qual requer atletas mais pesados e fortes, já no judô, existe a divisão de peso na competição indo de extra peso leve à peso pesado. Na *Figura 2* é perceptível analisar sobre a ginástica que, em um esporte onde predomina a agilidade, equilíbrio, flexibilidade e coordenação, assim, peso corporal baixo é sinônimo de bom rendimento nesse esporte.
 
 # Análise 3
 
@@ -277,7 +287,11 @@ ggsave("colunas-bi-freq3.pdf", width = 158, height = 93, units = "mm")
 
 ```
 
-Para essa análise podemos observar os 3 atletas que mais conquistaram medalhas nas Olimpíadas 2000-2016, pela *Figura 3* é possível observar que o atleta Michael Phelps foi o atleta mais vezes campeão (23) e com mais medalhas (28), já a atleta Natalie Coughlin foi a segunda colocada com mais medalhas da contagem absoluta (12) bem dividido entre ouro, bronze e prata, em terceiro colocado o Ryan Lochte com 12 medalhas também, sendo em sua maioria ouro (6). Para essa análise foi feito a filtragem dos 3 atletas com mais medalhas. Contudo, por conta do empate técnico para a segunda colocação, como critério de desempate, a ordem alfabética foi preferível.
+$$
+C*=0.5439
+$$
+
+Para essa análise podemos observar os 3 atletas que mais conquistaram medalhas nas Olimpíadas 2000-2016, pela *Figura 3* e pelo Coeficiente de Contingencia Modificado (0.5439), é possível observar que o existe uma certa relação de forma moderado entre o atleta e o tipo da medalha conquistada. Michael Phelps foi o atleta mais vezes campeão (23) e com mais medalhas (28), já a atleta Natalie Coughlin foi a segunda colocada com mais medalhas da contagem absoluta (12) bem dividido entre ouro, bronze e prata, em terceiro colocado o Ryan Lochte com 12 medalhas também, sendo em sua maioria ouro (6).
 
 # Análise 4
 
@@ -299,7 +313,7 @@ ggsave("disp_uni2.pdf", width = 158, height = 93, units = "mm")
 ```
 
 $$
-ρ=0.84081
+ρ=0.8408
 $$
 
 Analisando o gráfico da *Figura 4* juntamente ao Coeficiente de Correlação de Spearman (\>0.84), é possível determinar que a relação entre o peso e a altura do atleta é muito forte e positiva, ou seja, a medida em que o peso do atleta aumenta, a altura tende à aumentar proporcionalmente e vice-versa, o mesmo efeito ocorre caso alguma dessas medidas diminua.
