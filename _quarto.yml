@@ -25,6 +25,8 @@ format:
     
     fig-width: 6.2
     fig-height: 3.66
+    fig-cap-location: top
+    fig-pos: H
 
 
 crossref: 
