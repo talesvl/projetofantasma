@@ -74,16 +74,16 @@ library(readxl)
 library(latexpdf)
 library(dplyr)
 library(tinytex)
-dados<-read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx")
-Olimpiadas_ATHENAS <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+
+Olimpiadas_ATHENAS <- read_excel("C:/Coisas no R/Olimpiadas 2000 - 2016.xlsx", 
     sheet = "Athina")
-Olimpiadas_BEIJING <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+Olimpiadas_BEIJING <- read_excel("C:/Coisas no R/Olimpiadas 2000 - 2016.xlsx", 
     sheet = "Beijing")
-Olimpiadas_LONDRES <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+Olimpiadas_LONDRES <- read_excel("C:/Coisas no R/Olimpiadas 2000 - 2016.xlsx", 
     sheet = "London")
-Olimpiadas_RIO <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+Olimpiadas_RIO <- read_excel("C:/Coisas no R/Olimpiadas 2000 - 2016.xlsx", 
     sheet = "Rio de Janeiro")
-Olimpiadas_SIDNEY <- read_excel("E:/arquivos R/Olimpiadas 2000 - 2016.xlsx", 
+Olimpiadas_SIDNEY <- read_excel("C:/Coisas no R/Olimpiadas 2000 - 2016.xlsx", 
     sheet = "Sydney")
 
 
