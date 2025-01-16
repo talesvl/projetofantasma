@@ -68,6 +68,8 @@ editor: visual
 source("rdocs/source/packages.R")
 ```
 
+top3\<-c("Nome","Medalha","Quantidade","Frequência","Quantidade2","Acumulado","Acumulado2")
+
 ```{r}
 library(ggplot2)
 library(readxl)
@@ -161,6 +163,7 @@ top3<-head(top3,9)
 top3[4]<-round((top3$n.x/top3$n.y)*100,1)
 
 top3$Medal <- factor(top3$Medal, levels = c("Gold", "Silver", "Bronze"),labels = c("Ouro", "Prata", "Bronze"))
+colnames(top3)[2]<-"Medalha"
 
 #######################################
 
@@ -176,9 +179,9 @@ pearson<-round(cor(dados3$`Height (cm)`,dados3$`Weight (lbs)`, method = "pearson
 
 # Introdução
 
-Este relatório tem como objetivo realizar análises estatísticas que visam otimizar o desempenho dos atletas de elite da House of Excellence que participaram das Olimpíadas dos anos de 2000 até 2016.
+Este relatório tem como objetivo realizar análises estatísticas que visam otimizar o desempenho de todos os atletas que participaram das Olimpíadas de Verão entre os anos de 2000 até 2016.
 
-Neste, ao buscar analisar de diversas perspectivas, quatro análises sobre aspectos, características e feitos, foram realizados para auxiliar no melhor entendimento sobre os atletas, dentre elas, foi questionado quais foram os 5 países que mais tiveram mulheres medalhistas, qual o IMC dos atletas em cada esporte, este sendo, a ginástica, futebol, judô, atletismo e badminton, também foi foco de estudo quais eram os 3 atletas com mais medalhas no período de 2000 até 2016 e, por fim, buscou-se correlacionar o peso com a altura de cada atleta e entender sua variação. Para essas análises, a filtragem de apenas atletas premiados pelo seu desempenho com uma medalha foi aplicada.
+Nesse projeto é apresentado quatro análises sobre diversos aspectos, características e feitos esportivos, com o propósito de auxiliar no melhor entendimento sobre os atletas, dentre elas, foi questionado quais foram os 5 países que mais tiveram mulheres medalhistas, qual o IMC dos atletas em cada esporte, este sendo, a ginástica, futebol, judô, atletismo e badminton, também foi foco de estudo quais eram os 3 atletas com mais medalhas no período de 2000 até 2016 e, por fim, buscou-se correlacionar o peso com a altura de cada atleta e entender sua variação. Para essas análises, a filtragem de apenas atletas premiados pelo seu desempenho com pelo menos uma medalha foi aplicada.
 
 A coleta dos dados foi feita pela House of Excellence, contendo 67474 observações em 9 variáveis diferentes com informações importantes para a compreensão dos diversos aspectos que dão as características de cada atleta, entre as variáveis coletadas estão o nome do indivíduo, o seu gênero, idade, altura e peso, o país que representou nessas edições dos Jogos Olímpicos, o esporte em que compete, a modalidade ou evento ou categoria que, dentro do esporte, o atleta em questão disputou e, por último, se conquistou medalha ou não e, caso tenha conquistado, o tipo dela.
 
@@ -330,9 +333,13 @@ O boxplot é uma representação gráfica na qual se pode perceber de forma mais
 
 A porção inferior do retângulo diz respeito ao primeiro quartil, enquanto a superior indica o terceiro quartil. Já o traço no interior do retângulo representa a mediana do conjunto de dados, ou seja, o valor em que o conjunto de dados é dividido em dois subconjuntos de mesmo tamanho. A média é representada pelo losango branco e os pontos são *outliers*. Os *outliers* são valores discrepantes da série de dados, ou seja, valores que não demonstram a realidade de um conjunto de dados.
 
+![Exemplo de boxplot](images/box_uni.png){fig-align="center"}
+
 ## Gráfico de Dispersão
 
 O gráfico de dispersão é uma representação gráfica utilizada para ilustrar o comportamento conjunto de duas variáveis quantitativas. A figura abaixo ilustra um exemplo de gráfico de dispersão, onde cada ponto representa uma observação do banco de dados.
+
+![Exemplo de Gráfico de Dispersão](images/disp_uni.png){fig-align="center"}
 
 ## Tipos de Variáveis
 
@@ -373,7 +380,7 @@ Vale ressaltar que o coeficiente de Pearson é paramétrico e, portanto, sensív
 
 ## Top 5 países com o maior número de mulheres medalhistas
 
-Nesta análise, foi feito o estudo da frequência relativa da variável quantitativa discreta número de medalhistas femininas, pela variável qualitativa nominal país. Foram coletados dados de 94 países em que tiveram alguma mulher medalhistas e as 5 nações que tiveram mais representantes femininas durante todo o período entre as Olimpíadas de 2000 em Sydney até a de 2016 no Rio de Janeiro foram observadas e analisadas.
+Nesta análise, foi feito o estudo da variável quantitativa discreta número de medalhistas femininas, pela variável qualitativa nominal país. Foram coletados dados de 94 países em que tiveram alguma mulher medalhista e, as 5 nações que tiveram mais representantes femininas no pódio durante todo o período entre as Olimpíadas de 2000 em Sydney até a de 2016 no Rio de Janeiro foram observadas e analisadas.
 
 ```{r}
 #| label: fig-Figura-1
@@ -384,7 +391,7 @@ ggplot(mulheres5) +
   geom_bar(stat = "identity", fill = "#A11D21", width = 0.7) +
   geom_text(
     position = position_dodge(width = .9),
-    vjust = -0.5, #hjust = .5,
+    vjust = -0.5,
     size = 3
   ) +
   labs(x = "País", y = "Frequência") +
@@ -393,7 +400,7 @@ ggsave("colunas-uni-freq.pdf", width = 158, height = 93, units = "mm"
 )
 ```
 
-Analisando cada nação, percebe-se por meio da @fig-Figura-1 que o número de medalhistas é desigual. O gráfico indica que os 5 países que mais tiveram medalhistas na categoria feminina nos Jogos Olímpicos entre as edições de 2000 até 2016 foram, em primeiro lugar de maneira isolada, os Estados Unidos com 443 medalhistas, em seguida, a Rússia em segundo colocado com 298, na terceira posição se encontra a China com 268, em quarto colocado a Austrália com 219 e mais afastada dos demais, a Alemanha com 187 medalhistas em quinto colocado fechando o ranking das nações analisadas. Observa-se uma notória liderança dos Estados Unidos com 4.5 pontos percentuais de diferença e 145 medalhistas em comparação ao segundo colocado na análise, Rússia. Dessa forma, indicando que existe, nos Jogos Olímpicos, a soberania de atletas estadunidenses na categoria feminina no período analisado.
+Analisando cada nação, percebe-se por meio da @fig-Figura-1 que o número de medalhistas é desigual. O gráfico indica que os 5 países que mais tiveram medalhistas na categoria feminina nos Jogos Olímpicos entre as edições de 2000 até 2016 foram, em primeiro lugar de maneira isolada, os Estados Unidos com 443 medalhistas, em seguida, a Rússia com 298, na terceira posição se encontra a China com 268, em quarto colocado a Austrália com 219 e mais afastada dos demais, a Alemanha com 187 medalhistas em quinto colocado fechando o ranking das nações analisadas. Observa-se uma notória liderança dos Estados Unidos com 4.5 pontos percentuais de diferença e 145 medalhistas em comparação ao segundo colocado na análise, Rússia. Dessa forma, indicando que existe, nos Jogos Olímpicos, a soberania de atletas estadunidenses na categoria feminina no período analisado.
 
 ## Valor do IMC por esporte
 
@@ -415,7 +422,7 @@ ggplot(dados_esporte) +
   stat_summary(
     fun = "mean", geom = "point", shape = 23, size = 3, fill = "white"
   ) +
-  labs(x = "Esporte", y = "IMC") +
+  labs(x = "Esporte", y = "IMC(kg/m²)") +
   theme_estat()
 ggsave("box_bi4.pdf", width = 158, height = 93, units = "mm")
 ```
@@ -445,20 +452,20 @@ ggsave("box_bi4.pdf", width = 158, height = 93, units = "mm")
         Máximo & 44.38 & 26.73 & 29.07 & 26.45 & 56.50 \\
     \hline
     \end{tabular}
-    \label{quad:quadro_resumo1}
+    \label{quad:quadroresumo}
 \end{quadro}
 
-Avaliando o IMC dos esportes pela @fig-Figura-2, é perceptível que cada esporte possui um IMC ideal para uma melhor performance, sendo necessário um Índice de Massa Corporal menor para atletas da ginástica e do atletismo para terem maior resistência, enquanto os atletas de judô precisam ser mais pesados para serem mais fortes.
+Avaliando o IMC dos esportes pela @fig-Figura-2, é perceptível que cada esporte possui um IMC específico em que a maioria dos participantes tendem, sendo, por exemplo, necessário um Índice de Massa Corporal menor para atletas da ginástica, enquanto os atletas de judô tendem a ser mais pesados.
 
-Pelo quadro acima é possível observar um grande desvio padrão nas modalidades do atletismo e no judô, 4,01 e 5,05 respectivamente, isso se deve pelo fato de existir divisões de peso no caso do judô, indo de extra-peso-leve até o peso-pesado, e no caso do atletismo possui as disputas de lançamento de peso. Assim, o desvio padrão nesses esportes acabam sendo elevados pelo alto IMC desses atletas. Além disso, percebe-se a existência de muitos valores discrepantes nesses esportes, contendo até um valor de IMC maior que 56 no judô.
+Pelo **Quadro 1** é possível observar uma grande dispersão nos valores das modalidades do atletismo e no judô, contendo o desvio padrão de 4,01 e 5,05 respectivamente, isso se deve pelo fato de existir divisões de peso no caso do judô, indo de extra-peso-leve até o peso-pesado, e no caso do atletismo possui desde atletas de lançamento de peso e até maratonistas, nos quais possum uma composição corporal diferente. Além disso, percebe-se a existência de diversos outliers, valores atípicos, nesses esportes, contendo até um valor de IMC maior que 56 no judô e maior que 44 no caso do atletismo.
 
-Outro caso interessante de se analisar é o quão simétrico são os valores do IMC dos atletas do Badminton e do futebol, com desvio-padrão de 1,59 e 1,77, indicando que exista, uma relação entre peso e altura ideal para bons resultados nesses esportes.
+Outro caso interessante de se analisar é a simetria dos valores do IMC dos atletas do Badminton e do futebol, isto é, bem concentrados e de baixo desvio-padrão, sendo respectivamente de 1,59 e 1,77, indicando que exista, uma relação entre peso e altura a ser buscada entre eles.
 
-Apesar da facilidade do uso desse índice, é importante ressaltar que ele não leva em conta fatores como a composição corporal, a distribuição de gordura ou a saúde metabólica individual. Todos os atletas analisados estão no melhor condicionamento individual possível para o esporte deles, se trata de atletas de alto nível.
+Apesar da facilidade do uso desse índice, é importante ressaltar que ele não leva em conta fatores como a composição corporal, a distribuição de gordura ou a saúde metabólica individual.
 
 ## Top 3 medalhistas gerais por quantidade de cada tipo de medalha
 
-O prêmio máximo para o atleta dentro das Olimpíadas é estar no pódio de medalhas e com esse objetivo todos se preparam para os jogos, mesmo com a dificuldade dessas conquistas, existem atletas que se destacam mais que os outros. Nesta análise, o objetivo é descobrir quem são esses atletas e quais foram os tipos de medalhas, uma variável qualitativa ordinal, conquistas por eles, com isso, entender se existe relação entre o medalhista e cada tipo de medalha conquistada. Para isso, foi feita uma análise descritiva dos 3 atletas com o maior número de medalhas no total.
+Nesta análise, o objetivo é descobrir quem são os três atletas que mais conquistaram alguma medalha no período de observação, a variável qualitativa nominal nome, e quais foram os tipos de medalhas, uma variável qualitativa ordinal, conquistas por eles, com isso, entender se existe relação entre o medalhista e cada tipo de medalha conquistada. Para isso, foi feita uma análise descritiva desses 3 atletas em questão.
 
 ```{r}
 #| label: fig-Figura-3
@@ -470,16 +477,16 @@ legendas <- str_squish(str_c(top3$n.x, " (", porcentagens, ")"))
 ggplot(top3) +
   aes(
     x = fct_rev(fct_reorder(Names,freq.x, .desc = T)), y = n.x,
-    fill = Medal, label = legendas
+    fill = Medalha, label = legendas
     ) +
   geom_col(position = position_dodge2(preserve = "single", padding =
     0)) +
   geom_text(
     position = position_dodge(width = .9),
     vjust = -0.5, hjust = 0.5,
-    size = 3
+    size = 2.5
   ) +
-  labs(x = "Transmissão", y = "Frequência") +
+  labs(x = "Atleta", y = "Frequência") +
   theme_estat()
 ggsave("colunas-bi-freq3.pdf", width = 158, height = 93, units = "mm")
 
@@ -487,7 +494,7 @@ ggsave("colunas-bi-freq3.pdf", width = 158, height = 93, units = "mm")
 
 ```{=latex}
 \begin{table}[H]
-\caption{Frequência das medalhas}
+\caption{Frequência e tipo das medalhas}
 \centering
 \begin{tabular}{l|rr}
 \toprule
@@ -500,7 +507,9 @@ Bronze           & 10                                      & 19,23\%            
 \end{table}
 ```
 
-Para essa análise podemos observar os 3 atletas que mais conquistaram medalhas nas Olimpíadas 2000-2016, pela @fig-Figura-3, é possível observar que existe uma relação entre o atleta e o tipo da medalha conquistada. Michael Phelps foi o atleta mais vezes campeão, sendo em 23 oportunidades, sendo 82,1% de todas as suas medalhas, mais do que qualquer outro atleta , e que mais vezes ganhou alguma medalha, com um total de 28 no período de 4 Olimpíadas, já a atleta Natalie Coughlin que entre os 3 atletas foi a quem menos teve medalhas de ouro com apenas 3 entre as 12 totais conquistadas, a mesma quantidade de medalhas de Ryan Lochte porém o mesmo conquistou em sua maioria ouro, sendo 6 delas.
+Para essa análise podemos observar os 3 atletas que mais conquistaram medalhas nas Olimpíadas 2000-2016, pela @fig-Figura-3, é possível observar que o estadunidense Michael Phelps foi o atleta mais vezes campeão, sendo em 23 oportunidades, mais do que qualquer outro atleta, sendo 82,1% de todas as suas medalhas e também foi o que mais vezes ganhou alguma medalha, com um total de 28 no período de quatro Olimpíada. Já a atleta Natalie Coughlin que, entre os 3 atletas, foi a que menos teve medalhas de ouro com apenas 3 entre as 12 totais conquistadas, a mesma quantidade de medalhas de Ryan Lochte porém o mesmo conquistou em sua maioria ouro, sendo 6 delas.
+
+Pelo **Tabela 1** é possivel observar que entre os atletas análisados há um tendência ao tipo da medalha conquistada, o ouro, uma vez que essa, representa 61,54% das 52 medalhas conquistadas por eles, 32 no total.
 
 Todos os 3 indivíduos analisados com mais medalhas são atletas de natação, isso se deve pelo fato de existirem diversas divisões nesse esporte o que dá a chance de disputarem por mais medalhas.
 
@@ -533,7 +542,7 @@ ggsave("disp_uni2.pdf", width = 158, height = 93, units = "mm")
             S[table-format = 2.2]
             |}
     \hline
-        \textbf{Estatística} & \textbf{Altura} & \textbf{Peso} \\
+        \textbf{Estatística} & \textbf{Altura (cm)} & \textbf{Peso (kg} \\
         \hline
         Média & 178.21 & 74.14 \\
         Desvio Padrão & 11.71 & 16.25 \\
@@ -550,12 +559,10 @@ ggsave("disp_uni2.pdf", width = 158, height = 93, units = "mm")
 
 Analisando o gráfico da @fig-Figura-4 juntamente com o Coeficiente de Correlação de Pearson de $r$ = 0,795. É possível determinar que a relação entre o peso e a altura do atleta é forte e positiva, ou seja, é diretamente proporcional, à medida que o peso do atleta aumenta, a altura tende a aumentar proporcionalmente e vice-versa.
 
-O quadro acima também serve de parâmetro para observar que, entre os atletas, existe uma grande amplitude entre essas características, na altura por exemplo, o mais alto mede 2,19 metros enquanto o menor mede 1,37 metros, já no peso, o mais pesado possui 175 quilos e o mais leve tem 28 quilos apenas. Apesar de espantosa a diferença dessas características físicas , é normal elas existirem, uma vez que cada modalidade nos Jogos Olímpicos possui medidas corporais proporcionais à atividade exercida no esporte. Além disso, é possível observar que o desvio padrão do peso, 16,25 quilos, é maior que o desvio padrão da altura, 11,71 centímetros, isso se deve pelo fato de não se possível existir muita diferença na altura de um atleta médio, porém, o peso pode variar bastante entre eles, dependendo da função exercida.
+O **Quadro 2** também serve de parâmetro para observar que, entre os atletas, existe uma grande amplitude entre essas características, na altura por exemplo, o mais alto mede 2,19 metros enquanto o menor mede 1,37 metros, já no peso, o mais pesado possui 175 quilos e o mais leve tem 28 quilos apenas. Além disso, é possível observar que os valores do peso variam mais em comparação aos valores da altura, evidenciado pelo coeficiente de variação de 6,56 para a altura e de 21,91 para o peso, isso se deve pelo fato de não se possível existir muita diferença na altura de um atleta médio, porém, o peso pode variar bastante entre eles, dependendo do esporte praticado.
 
 # Conclusão
 
 O projeto realizado, teve como objetivo fornecer uma análise estatística detalhada sobre atletas que participaram dos Jogos Olímpicos de Sidney em 2000 até a edição de 2016 sediada no Rio de Janeiro. foram objeto de estudo para essas análises 4 tópicos que de maneira sucinta auxiliaram para um entendimento amplo sobre tendências nos esportes e em características dos atletas.
 
-Nas análises pôde ser compreendido a representatividade de mulheres e quais países desempenham melhor na categoria feminina através do questionamento dos 5 países em que mulheres mais vezes conquistaram medalhas. Além disso, o estudo sobre o IMC demonstrou que certas proporções corporais têm mais tendência para um melhor desempenho no esporte que outras, como visto na análise por exemplo, atletas de judô precisam ser mais pesados em relação à altura do que atletas da ginástica. Saber os atletas que mais vezes chegaram na posição de destaque é importante para questionar seus treinamentos para que seus feitos possam ser repetidos por outros. Entender que o existe uma proporção entre a variação do peso e a altura de atletas de altíssimo nível é importante para buscar essa tal relação nos futuros atletas para otimizar seus desempenhos e prevenir futuras lesões.
-
-Com base nessas análises, a House of Excellence poderá aprimorar ainda mais seu trabalho com os atletas de elite, ajustando estratégias de treinamento, nutrição e acompanhamento físico de forma mais eficaz e personalizada, com foco em resultados ainda mais expressivos nas futuras edições dos Jogos Olímpicos.
+Nas análises pôde ser compreendido a representatividade de mulheres e quais países desempenham melhor na categoria feminina através do questionamento dos 5 países em que mulheres mais vezes conquistaram medalhas. Além disso, o estudo sobre o IMC demonstrou que certas proporções corporais têm mais tendência para um melhor desempenho no esporte que outras. Saber quais são os atletas que mais vezes chegaram na posição de destaque é importante para questionar seus treinamentos para que seus feitos possam ser repetidos por outros. Entender que o existe uma proporção entre a variação do peso e a altura de atletas de altíssimo nível é importante para buscar essa tal relação nos futuros atletas para otimizar seus desempenhos.
